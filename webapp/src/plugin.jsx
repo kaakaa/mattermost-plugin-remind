@@ -16,76 +16,32 @@ function getTranslations(locale) {
     return {};
 }
 
-function getSubMenu() {
-    return {
-        id: 'submenu.message',
-        text: (
+export default class RemindPlugin {
+    initialize(registry, store) {
+        const {id, rootRegisterMenuItem} = registry.registerPostDropdownSubMenuAction(
             <FormattedMessage
                 id='submenu.message'
                 defaultMessage='Remind me about this'
             />
-        ),
-        subMenu: [
-            {
-                id: 'submenu.20min',
-                text: (
-                    <FormattedMessage
-                        id='submenu.20min'
-                        key='submenu.20min'
-                        defaultMessage='In 20 minutes'
-                    />
-                ),
-            },
-            {
-                id: 'submenu.1hr',
-                text: (
-                    <FormattedMessage
-                        id='submenu.1hr'
-                        key='submenu.1hr'
-                        defaultMessage='In 1 hour'
-                    />
-                ),
-            },
-            {
-                id: 'submenu.3hr',
-                text: (
-                    <FormattedMessage
-                        id='submenu.3hr'
-                        key='submenu.3hr'
-                        defaultMessage='In 3 hours'
-                    />
-                ),
-            },
-            {
-                id: 'submenu.tomorrow',
-                text: (
-                    <FormattedMessage
-                        id='submenu.tomorrow'
-                        key='submenu.tomorrow'
-                        defaultMessage='Tomorrow'
-                    />
-                ),
-            },
-            {
-                id: 'submenu.nextweek',
-                text: (
-                    <FormattedMessage
-                        id='submenu.nextweek'
-                        key='submenu.nextweek'
-                        defaultMessage='Next week'
-                    />
-                ),
-            },
-        ],
-    };
-}
-
-export default class RemindPlugin {
-    initialize(registry, store) {
-        registry.registerPostDropdownMenuAction(
-            getSubMenu(),
-            (postId, item) => store.dispatch(postDropdownMenuAction(postId, item)),
         );
+
+        const menus = [
+            {id: 'submenu.20min',       defaultMessage: 'In 20 minutes'},
+            {id: 'submenu.1hr',         defaultMessage: 'In 1 hour'},
+            {id: 'submenu.3hr',         defaultMessage: 'In 3 hours'},
+            {id: 'submenu.tomorrow',    defaultMessage: 'Tomorrow'},
+            {id: 'submenu.nextweek',    defaultMessage: 'Next week'}
+        ];
+        menus.forEach(menu => {
+            rootRegisterMenuItem(
+                <FormattedMessage
+                    id={menu.id}
+                    key={menu.id}
+                    defaultMessage={menu.defaultMessage}
+                />,
+                (postId) => store.dispatch(postDropdownMenuAction(postId, menu.id))
+            );
+        });
 
         registry.registerTranslations(getTranslations);
     }
